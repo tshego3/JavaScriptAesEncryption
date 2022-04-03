@@ -8,6 +8,19 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
+    <!-- Custom CSS -->
+    <style>
+        html, body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            color: #E5E5E5;
+            background-color: #1A1A1A;
+            background-position: center;
+            overflow-y: visible !important;
+            overflow-x: hidden;
+        }
+    </style>
+
     <!-- CryptoJS -->
     <script type="text/javascript" src="crypto-js-4.1.1/crypto-js.js"></script>
     <title>JavaScript AES Encryption</title>
@@ -17,17 +30,25 @@
         <h1>AES Encryption Tool</h1>
 
         <div class="row g-2">
-            <div class="col-auto">
+            <div class="col-md">
                 <label for="inputString" class="visually-hidden">Text</label>
-                <input type="text" class="form-control" id="inputString" placeholder="Type Here">
+                <input type="text" class="form-control" id="inputString" placeholder="Text Here">
+                <h4>Result:</h4>
+                <p id="txtResult">Sample Result</p>
             </div>
             <div class="col-auto">
-                <button type="submit" class="btn btn-primary mb-3" onclick="AesEncryption()">Convert</button>
+                <button type="submit" class="btn btn-primary mb-3" onclick="AesEncryption()">Encrypt</button>
+            </div>
+            <div class="col-md">
+                <label for="inputEncryptedString" class="visually-hidden">Text</label>
+                <input type="text" class="form-control" id="inputEncryptedString" placeholder="Text Here">
+                <h4>Result:</h4>
+                <p id="txtDecryptedResult">Sample Result</p>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary mb-3" onclick="AesDecryption()">Decrypt</button>
             </div>
         </div>
-
-        <h4>Result:</h4>
-        <p id="txtResult">Sample Result</p>
     </div>
     
     <script>
@@ -36,22 +57,25 @@
             document.getElementById("txtResult").innerHTML = encryptString(txtInput, "Example Secret Key");
         }
 
+        function AesDecryption() {
+            var txtInput = document.getElementById("inputEncryptedString").value;
+            document.getElementById("txtDecryptedResult").innerHTML = decryptString(txtInput, "Example Secret Key").toString(CryptoJS.enc.Utf8);
+        }
+
         function encryptString(encryptString, secretKey) {
-            encryptString = addExtraByteToChars(encryptString);
             var keyBytes = CryptoJS.PBKDF2(secretKey, "Example IV", { keySize: 48 / 4, iterations: 1000 });
-            //console.log(keyBytes.toString());
             var key = new CryptoJS.lib.WordArray.init(keyBytes.words, 32);
             var iv = new CryptoJS.lib.WordArray.init(keyBytes.words.splice(32 / 4), 16);
             var encrypted = CryptoJS.AES.encrypt(encryptString, key, { iv: iv, });
             return encrypted;
         }
 
-        function addExtraByteToChars(str) {
-            let strResult = '';
-            for (var i = 0; i < str.length; ++i) {
-                strResult += str.charAt(i) + String.fromCharCode(0);
-            }
-            return strResult;
+        function decryptString(encryptedString, secretKey) {
+            var keyBytes = CryptoJS.PBKDF2(secretKey, "Example IV", { keySize: 48 / 4, iterations: 1000 });
+            var key = new CryptoJS.lib.WordArray.init(keyBytes.words, 32);
+            var iv = new CryptoJS.lib.WordArray.init(keyBytes.words.splice(32 / 4), 16);
+            var decrypted = CryptoJS.AES.decrypt(encryptedString, key, { iv: iv, });
+            return decrypted;
         }
     </script>
 

@@ -11,36 +11,11 @@ public class Program
 
 		// Decrypt the bytes to a string.
 		Console.WriteLine("Original:   {0}", original);
-		Console.WriteLine("jsEncryptedString:   {0}", EncryptString(original));
 		Console.WriteLine("encryptedString:   {0}", Convert.ToBase64String(EncryptStringToBytes_Aes(original)));
 		Console.WriteLine("decryptedString: {0}", DecryptStringFromBytes_Aes(EncryptStringToBytes_Aes(original)));
+		Console.WriteLine("jsDecryptedString: {0}", DecryptStringFromBytes_Aes(Convert.FromBase64String("gwSCI8Qf74fe9egoncfZSg==")));
 	}
 	
-	static string EncryptString(string Text)
-	{
-		string secretKey = "Example Secret Key";
-		string secretIV = "Example IV";
-		byte[] plainText = Encoding.Unicode.GetBytes(Text); // this is UTF-16 LE
-		string cipherText;
-		using (Aes encryptor = Aes.Create())
-		{
-			var pdb = new Rfc2898DeriveBytes(secretKey, Encoding.ASCII.GetBytes(secretIV));
-			encryptor.Key = pdb.GetBytes(32);
-			encryptor.IV = pdb.GetBytes(16);
-			using (MemoryStream ms = new MemoryStream())
-			{
-				using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write))
-				{
-					cs.Write(plainText, 0, plainText.Length);
-					cs.Close();
-				}
-				cipherText = Convert.ToBase64String(ms.ToArray());
-			}
-		}
-
-		return cipherText;
-	}
-
 	static byte[] EncryptStringToBytes_Aes(string plainText)
 	{
 		string secretKey = "Example Secret Key";
