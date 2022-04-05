@@ -33,6 +33,10 @@
             <div class="col-md">
                 <label for="inputString" class="visually-hidden">Text</label>
                 <input type="text" class="form-control" id="inputString" placeholder="Text Here">
+                <label for="inputKey" class="visually-hidden">Text</label>
+                <input type="text" class="form-control" id="inputKey" placeholder="Key Here">
+                <label for="inputIV" class="visually-hidden">Text</label>
+                <input type="text" class="form-control" id="inputIV" placeholder="IV Here">
                 <h4>Result:</h4>
                 <p id="txtResult">Sample Result</p>
             </div>
@@ -54,24 +58,28 @@
     <script>
         function AesEncryption() {
             var txtInput = document.getElementById("inputString").value;
-            document.getElementById("txtResult").innerHTML = encryptString(txtInput, "Example Secret Key");
+            var txtKey = document.getElementById("inputKey").value;
+            var txtIV = document.getElementById("inputIV").value;
+            document.getElementById("txtResult").innerHTML = encryptString(txtInput, txtKey, txtIV);
         }
 
         function AesDecryption() {
             var txtInput = document.getElementById("inputEncryptedString").value;
-            document.getElementById("txtDecryptedResult").innerHTML = decryptString(txtInput, "Example Secret Key").toString(CryptoJS.enc.Utf8);
+            var txtKey = document.getElementById("inputKey").value;
+            var txtIV = document.getElementById("inputIV").value;
+            document.getElementById("txtDecryptedResult").innerHTML = decryptString(txtInput, txtKey, txtIV).toString(CryptoJS.enc.Utf8);
         }
 
-        function encryptString(encryptString, secretKey) {
-            var keyBytes = CryptoJS.PBKDF2(secretKey, "Example IV", { keySize: 48 / 4, iterations: 1000 });
+        function encryptString(encryptString, secretKey, secretIV) {
+            var keyBytes = CryptoJS.PBKDF2(secretKey, secretIV, { keySize: 48 / 4, iterations: 1000 });
             var key = new CryptoJS.lib.WordArray.init(keyBytes.words, 32);
             var iv = new CryptoJS.lib.WordArray.init(keyBytes.words.splice(32 / 4), 16);
             var encrypted = CryptoJS.AES.encrypt(encryptString, key, { iv: iv, });
             return encrypted;
         }
 
-        function decryptString(encryptedString, secretKey) {
-            var keyBytes = CryptoJS.PBKDF2(secretKey, "Example IV", { keySize: 48 / 4, iterations: 1000 });
+        function decryptString(encryptedString, secretKey, secretIV) {
+            var keyBytes = CryptoJS.PBKDF2(secretKey, secretIV, { keySize: 48 / 4, iterations: 1000 });
             var key = new CryptoJS.lib.WordArray.init(keyBytes.words, 32);
             var iv = new CryptoJS.lib.WordArray.init(keyBytes.words.splice(32 / 4), 16);
             var decrypted = CryptoJS.AES.decrypt(encryptedString, key, { iv: iv, });
